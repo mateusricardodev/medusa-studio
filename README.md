@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Medusa Studio — Site & Sistema
 
-## Getting Started
+Demo navegável do sistema Medusa Studio. Frontend only, sem backend.
 
-First, run the development server:
+## Como rodar
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Rotas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Rota | Descrição |
+|------|-----------|
+| `/` | Site público — hero, serviços, avaliações, localização |
+| `/agendar` | Fluxo de agendamento simulado |
+| `/tatuagem` | Formulário de orçamento de tatuagem |
+| `/loja` | Catálogo de roupas e tênis |
+| `/painel` | Painel do dono (somente visual) |
+| `/diagnostico` | Simulador de perdas — ferramenta de pitch |
 
-## Learn More
+## Onde estão os dados
 
-To learn more about Next.js, take a look at the following resources:
+Todos em `lib/mock/`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `services.ts` — lista de serviços e preços
+- `professionals.ts` — profissionais do estúdio
+- `slots.ts` — lógica de geração de slots de horário
+- `products.ts` — catálogo de roupas e tênis
+- `reviews.ts` — avaliações
+- `clients.ts` — dados do CRM
+- `appointments.ts` — agenda do dia e métricas
+- `revenue.ts` — faturamento por mês e KPIs do painel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Onde trocar logo e fotos reais
 
-## Deploy on Vercel
+- **Logo**: substituir o componente `components/ui/MedusaLogo.tsx` por um `<Image>` apontando para o arquivo real em `public/`.
+- **Fotos dos produtos**: em `components/loja/ProductGrid.tsx`, o componente `ProductPlaceholder` pode ser substituído por `<Image src={product.imageUrl} ... />` após adicionar a propriedade `imageUrl` em `lib/mock/products.ts`.
+- **Fotos dos profissionais**: em `components/agendar/AgendarFlow.tsx`, o avatar com inicial pode virar uma `<Image>`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy na Vercel
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+git init && git add . && git commit -m "init: medusa studio"
+vercel
+```
+
+Ou conectar o repositório no painel da Vercel diretamente.
+Para domínio próprio: Vercel → Project Settings → Domains.
+
+## WhatsApp
+
+O número está em 5 lugares como `5512991234567`. Substituir em:
+- `components/home/Location.tsx`
+- `components/agendar/AgendarFlow.tsx`
+- `components/tatuagem/TattooForm.tsx`
+- `components/loja/ProductGrid.tsx`
+- `components/diagnostico/LossSimulator.tsx`
+
+> Todos os dados são fictícios, gerados exclusivamente para demonstração.
