@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-// AnimatePresence is used below for step transitions
 import { services } from "@/lib/mock/services";
 import { professionals } from "@/lib/mock/professionals";
 import { getSlots } from "@/lib/mock/slots";
 
-type Step = "servico" | "profissional" | "data" | "horario" | "dados" | "confirmado";
+type Category = "barbearia" | "tatuagem" | "piercing";
+type Step = "categoria" | "servico" | "profissional" | "data" | "horario" | "dados" | "confirmado";
 
 interface Booking {
   serviceId: string;
@@ -19,16 +19,39 @@ interface Booking {
   email: string;
 }
 
+const STEPS: Step[] = ["categoria", "servico", "profissional", "data", "horario", "dados", "confirmado"];
+const PROGRESS_STEPS = STEPS.filter((s) => s !== "confirmado");
+
 const STEP_LABELS: Record<Step, string> = {
+  categoria: "Categoria",
   servico: "Serviço",
   profissional: "Profissional",
   data: "Data",
   horario: "Horário",
-  dados: "Seus dados",
+  dados: "Dados",
   confirmado: "Confirmado",
 };
 
-const STEPS: Step[] = ["servico", "profissional", "data", "horario", "dados", "confirmado"];
+const CATEGORIES: { id: Category; label: string; sub: string; description: string }[] = [
+  {
+    id: "barbearia",
+    label: "Barbearia",
+    sub: "Corte · Barba · Pigmentação",
+    description: "Cortes masculinos, modelagem de barba, hot towel shave e tratamentos capilares.",
+  },
+  {
+    id: "tatuagem",
+    label: "Tatuagem",
+    sub: "Fine Line · Blackwork · Realismo",
+    description: "Do pequeno ao grande. Cada trabalho pensado antes de ser executado.",
+  },
+  {
+    id: "piercing",
+    label: "Piercing",
+    sub: "Helix · Septo · Daith · Industrial",
+    description: "Perfuração precisa com material cirúrgico certificado. Joias inclusas.",
+  },
+];
 
 function formatDateBR(iso: string) {
   if (!iso) return "";
@@ -55,59 +78,61 @@ const slideVariants = {
 };
 
 export default function AgendarFlow() {
-  const [step, setStep] = useState<Step>("servico");
+  const [step, setStep] = useState<Step>("categoria");
+  const [category, setCategory] = useState<Category | null>(null);
   const [booking, setBooking] = useState<Partial<Booking>>({});
 
   const currentIndex = STEPS.indexOf(step);
-  const barbeariaServices = services.filter((s) => s.category !== "loja");
 
   function goTo(s: Step) { setStep(s); }
 
-  const selectedService = barbeariaServices.find((s) => s.id === booking.serviceId);
+  const categoryServices = services.filter((s) => s.category === category);
+  const selectedService = categoryServices.find((s) => s.id === booking.serviceId);
   const selectedProfessional = professionals.find((p) => p.id === booking.professionalId);
   const slots = booking.professionalId && booking.date
     ? getSlots(booking.professionalId, booking.date)
     : [];
 
-  // Minimum date = today + 1
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDate = tomorrow.toISOString().split("T")[0];
 
   return (
     <div>
-      {/* Progress bar */}
-      <div className="mb-10">
-        <div className="flex items-center gap-0 mb-4">
-          {STEPS.filter(s => s !== "confirmado").map((s, i) => (
-            <div key={s} className="flex items-center flex-1">
-              <div
-                className={`w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-mono shrink-0 transition-colors ${
-                  currentIndex > i
-                    ? "border-[#B8B9C0] bg-[#B8B9C0] text-[#0B0B0D]"
-                    : currentIndex === i
-                    ? "border-[#B8B9C0] text-[#B8B9C0]"
-                    : "border-[#2C2C33] text-[#5A5B63]"
-                }`}
-              >
-                {currentIndex > i ? "✓" : i + 1}
-              </div>
-              {i < STEPS.filter(s => s !== "confirmado").length - 1 && (
+      {/* Barra de progresso */}
+      {step !== "confirmado" && (
+        <div className="mb-10">
+          <div className="flex items-center gap-0 mb-4">
+            {PROGRESS_STEPS.map((s, i) => (
+              <div key={s} className="flex items-center flex-1">
                 <div
-                  className={`flex-1 h-px transition-colors ${
-                    currentIndex > i ? "bg-[#B8B9C0]" : "bg-[#2C2C33]"
+                  className={`w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-mono shrink-0 transition-colors ${
+                    currentIndex > i
+                      ? "border-[#B8B9C0] bg-[#B8B9C0] text-[#0B0B0D]"
+                      : currentIndex === i
+                      ? "border-[#B8B9C0] text-[#B8B9C0]"
+                      : "border-[#2C2C33] text-[#5A5B63]"
                   }`}
-                />
-              )}
-            </div>
-          ))}
+                >
+                  {currentIndex > i ? "✓" : i + 1}
+                </div>
+                {i < PROGRESS_STEPS.length - 1 && (
+                  <div
+                    className={`flex-1 h-px transition-colors ${
+                      currentIndex > i ? "bg-[#B8B9C0]" : "bg-[#2C2C33]"
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between text-[9px] tracking-widest uppercase text-[#5A5B63] font-body">
+            {PROGRESS_STEPS.map((s) => (
+              <span key={s}>{STEP_LABELS[s]}</span>
+            ))}
+          </div>
         </div>
-        <div className="flex justify-between text-[9px] tracking-widest uppercase text-[#5A5B63] font-body">
-          {STEPS.filter(s => s !== "confirmado").map((s) => (
-            <span key={s}>{STEP_LABELS[s]}</span>
-          ))}
-        </div>
-      </div>
+      )}
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -116,14 +141,51 @@ export default function AgendarFlow() {
           initial="enter"
           animate="center"
           exit="exit"
-          transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          {/* ── Etapa 1: Serviço ── */}
+
+          {/* ── Etapa 1: Categoria ── */}
+          {step === "categoria" && (
+            <div>
+              <h2 className="font-display text-xl text-[#E6E6EA] mb-2">O que você quer fazer?</h2>
+              <p className="text-xs text-[#5A5B63] font-body mb-6">Escolha a categoria para ver os serviços disponíveis.</p>
+              <div className="flex flex-col gap-3">
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      setCategory(cat.id);
+                      setBooking({});
+                      goTo("servico");
+                    }}
+                    className={`flex items-center justify-between px-5 py-5 border text-left transition-all group ${
+                      category === cat.id
+                        ? "border-[#B8B9C0] bg-[#1A1A1F]"
+                        : "border-[#2C2C33] bg-[#141417] hover:border-[#5A5B63]"
+                    }`}
+                  >
+                    <div className="flex-1">
+                      <div className="font-body font-semibold text-base text-[#E6E6EA] mb-1">{cat.label}</div>
+                      <div className="font-body text-xs text-[#5A5B63]">{cat.description}</div>
+                    </div>
+                    <div className="ml-6 text-right shrink-0">
+                      <div className="text-[10px] tracking-[0.2em] uppercase text-[#5A5B63] font-body">{cat.sub}</div>
+                      <div className="text-[#5A5B63] group-hover:text-[#B8B9C0] transition-colors text-sm mt-1">→</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── Etapa 2: Serviço ── */}
           {step === "servico" && (
             <div>
-              <h2 className="font-display text-xl text-[#E6E6EA] mb-6">Qual serviço?</h2>
+              <h2 className="font-display text-xl text-[#E6E6EA] mb-2">Qual serviço?</h2>
+              <p className="text-xs text-[#5A5B63] font-body mb-6 capitalize">
+                {CATEGORIES.find((c) => c.id === category)?.label} — {categoryServices.length} serviços disponíveis
+              </p>
               <div className="flex flex-col gap-2">
-                {barbeariaServices.map((s) => (
+                {categoryServices.map((s) => (
                   <button
                     key={s.id}
                     onClick={() => { setBooking({ ...booking, serviceId: s.id }); goTo("profissional"); }}
@@ -144,10 +206,13 @@ export default function AgendarFlow() {
                   </button>
                 ))}
               </div>
+              <button onClick={() => goTo("categoria")} className="mt-6 text-xs text-[#5A5B63] font-body hover:text-[#8A8B93] transition-colors">
+                ← Voltar
+              </button>
             </div>
           )}
 
-          {/* ── Etapa 2: Profissional ── */}
+          {/* ── Etapa 3: Profissional ── */}
           {step === "profissional" && (
             <div>
               <h2 className="font-display text-xl text-[#E6E6EA] mb-6">Com quem?</h2>
@@ -188,7 +253,7 @@ export default function AgendarFlow() {
             </div>
           )}
 
-          {/* ── Etapa 3: Data ── */}
+          {/* ── Etapa 4: Data ── */}
           {step === "data" && (
             <div>
               <h2 className="font-display text-xl text-[#E6E6EA] mb-6">Quando?</h2>
@@ -213,7 +278,7 @@ export default function AgendarFlow() {
             </div>
           )}
 
-          {/* ── Etapa 4: Horário ── */}
+          {/* ── Etapa 5: Horário ── */}
           {step === "horario" && (
             <div>
               <h2 className="font-display text-xl text-[#E6E6EA] mb-2">
@@ -245,7 +310,7 @@ export default function AgendarFlow() {
             </div>
           )}
 
-          {/* ── Etapa 5: Dados do cliente ── */}
+          {/* ── Etapa 6: Dados do cliente ── */}
           {step === "dados" && (
             <div>
               <h2 className="font-display text-xl text-[#E6E6EA] mb-6">Seus dados</h2>
@@ -275,10 +340,11 @@ export default function AgendarFlow() {
                 />
               </div>
 
-              {/* Resumo */}
               <div className="bg-[#141417] border border-[#2C2C33] p-5 mb-6 text-sm font-body">
                 <div className="text-[10px] tracking-widest uppercase text-[#5A5B63] mb-3">Resumo</div>
                 <div className="grid grid-cols-2 gap-y-2 text-xs">
+                  <span className="text-[#5A5B63]">Categoria</span>
+                  <span className="text-[#B8B9C0] capitalize">{CATEGORIES.find((c) => c.id === category)?.label}</span>
                   <span className="text-[#5A5B63]">Serviço</span>
                   <span className="text-[#B8B9C0]">{selectedService?.name}</span>
                   <span className="text-[#5A5B63]">Profissional</span>
@@ -325,7 +391,7 @@ export default function AgendarFlow() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <a
-                  href={`https://wa.me/5512991234567?text=${buildWAMessage(booking as Booking, selectedService?.name ?? "", selectedProfessional?.name ?? "")}`}
+                  href={`https://wa.me/5512981084071?text=${buildWAMessage(booking as Booking, selectedService?.name ?? "", selectedProfessional?.name ?? "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 h-12 px-8 bg-[#B8B9C0] text-[#0B0B0D] text-sm tracking-widest uppercase font-body font-medium hover:bg-[#ECEDF1] transition-colors"
@@ -333,7 +399,7 @@ export default function AgendarFlow() {
                   Abrir no WhatsApp
                 </a>
                 <button
-                  onClick={() => { setBooking({}); setStep("servico"); }}
+                  onClick={() => { setBooking({}); setCategory(null); setStep("categoria"); }}
                   className="h-12 px-8 border border-[#2C2C33] text-[#8A8B93] text-sm tracking-widest uppercase font-body hover:border-[#5A5B63] transition-all"
                 >
                   Novo agendamento
@@ -352,6 +418,7 @@ export default function AgendarFlow() {
               </div>
             </div>
           )}
+
         </motion.div>
       </AnimatePresence>
     </div>
