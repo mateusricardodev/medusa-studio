@@ -29,7 +29,7 @@ function SectionLabel({ children, id }: { children: React.ReactNode; id?: string
       <span className="block w-px h-3 bg-[#5A5B63] shrink-0" aria-hidden="true" />
       <span
         id={id}
-        className="text-[10px] tracking-[0.35em] uppercase text-[#5A5B63] font-body"
+        className="text-[10px] tracking-[0.35em] uppercase text-[#5A5B63] font-sans font-semibold"
       >
         {children}
       </span>
@@ -89,7 +89,7 @@ export default function Dashboard() {
               return (
                 <div
                   key={apt.id}
-                  className="flex items-center gap-3 px-3 py-2.5 border-b border-[#1E1E24] text-xs font-body"
+                  className="flex items-center gap-3 px-3 py-2.5 border-b border-[#1E1E24] text-xs font-sans"
                   style={{ borderLeft: `2px solid ${s.color}` }}
                 >
                   <span className="font-mono text-[#8A8B93] w-10 shrink-0 tabular-nums">{apt.time}</span>
@@ -98,7 +98,7 @@ export default function Dashboard() {
                     <div className="text-[#5A5B63] truncate text-[10px]">{apt.service}</div>
                   </div>
                   <span
-                    className="text-[9px] tracking-wider uppercase shrink-0 font-body"
+                    className="text-[9px] tracking-wider uppercase shrink-0 font-sans"
                     style={{ color: s.color }}
                   >
                     {s.label}
@@ -114,13 +114,13 @@ export default function Dashboard() {
       <section aria-labelledby="crm-heading">
         <SectionLabel id="crm-heading">Clientes — CRM</SectionLabel>
         <div className="overflow-x-auto border border-[#2C2C33]">
-          <table className="w-full text-sm font-body border-collapse">
+          <table className="w-full text-sm font-sans border-collapse">
             <thead>
               <tr className="bg-[#141417] border-b border-[#2C2C33]">
                 {["Cliente", "Telefone", "Última visita", "Visitas/ano", "Total gasto", "Tag"].map((h) => (
                   <th
                     key={h}
-                    className="text-[9px] tracking-[0.25em] uppercase text-[#5A5B63] text-left py-3 px-4 font-body whitespace-nowrap"
+                    className="text-[9px] tracking-[0.25em] uppercase text-[#5A5B63] text-left py-3 px-4 font-sans font-semibold whitespace-nowrap"
                   >
                     {h}
                   </th>
@@ -134,7 +134,7 @@ export default function Dashboard() {
                   className="border-b border-[#1E1E24] hover:bg-[#141417] transition-colors"
                   style={{ background: i % 2 === 0 ? "#0F0F12" : "#141417" }}
                 >
-                  <td className="py-3 px-4 text-[#E6E6EA] font-body">{c.name}</td>
+                  <td className="py-3 px-4 text-[#E6E6EA] font-sans">{c.name}</td>
                   <td className="py-3 px-4 text-[#5A5B63] font-mono text-xs tabular-nums">{c.phone}</td>
                   <td className="py-3 px-4 text-[#5A5B63] font-mono text-xs tabular-nums">{c.lastVisit}</td>
                   <td className="py-3 px-4 text-[#B8B9C0] font-mono text-xs tabular-nums text-center">{c.visitsThisYear}×</td>
@@ -143,7 +143,7 @@ export default function Dashboard() {
                   </td>
                   <td className="py-3 px-4">
                     <span
-                      className="text-[9px] tracking-widest uppercase border px-2 py-0.5 font-body"
+                      className="text-[9px] tracking-widest uppercase border px-2 py-0.5 font-sans"
                       style={{ color: TAG_STYLE[c.tag] ?? "#5A5B63", borderColor: TAG_STYLE[c.tag] ?? "#2C2C33" }}
                     >
                       {c.tag}
@@ -188,16 +188,16 @@ function KPICard({
         style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, ${c}18, transparent)` }}
         aria-hidden="true"
       />
-      <div className="text-[9px] tracking-[0.35em] uppercase text-[#5A5B63] font-body mb-3">
+      <div className="text-[9px] tracking-[0.35em] uppercase text-[#5A5B63] font-sans mb-3">
         {label}
       </div>
       <div
-        className="font-display leading-none mb-2"
-        style={{ fontSize: "clamp(1.6rem, 2.8vw, 2.5rem)", color: c }}
+        className="font-sans font-extrabold tracking-tight leading-none mb-2"
+        style={{ fontSize: "clamp(1.75rem, 3vw, 2.75rem)", color: c }}
       >
         {value}
       </div>
-      <div className="text-[10px] text-[#5A5B63] font-body">{sub}</div>
+      <div className="text-[10px] text-[#5A5B63] font-sans">{sub}</div>
     </div>
   );
 }

@@ -19,6 +19,7 @@
   --font-display: var(--font-cinzel), serif;
   --font-body: var(--font-archivo), Arial, sans-serif;
   --font-mono: var(--font-jetbrains), monospace;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
 
   /* Animations */
   --animate-fade-in: fade-in 0.6s ease-out forwards;
