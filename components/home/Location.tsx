@@ -53,7 +53,7 @@ export default function Location() {
                   <div key={day} className="flex justify-between items-center border-b border-[#2C2C33] pb-3">
                     <span className="font-body text-sm text-[#8E8F97]">{day}</span>
                     <span
-                      className="font-mono text-sm"
+                      className="font-sans font-semibold text-sm tabular-nums"
                       style={{ color: time === "Fechado" ? "#5A5B63" : "#B8B9C0" }}
                     >
                       {time}
