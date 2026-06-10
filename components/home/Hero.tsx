@@ -21,25 +21,50 @@ export default function Hero() {
       className="grain-overlay relative min-h-screen flex items-center overflow-hidden bg-[#0B0B0D]"
       aria-label="Hero — Medusa Studio"
     >
-      {/* Subtle radial glow */}
+      {/* Foto da fachada — lateral direita, tela toda, absolutamente posicionada */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.1, delay: 0.3, ease: "easeOut" }}
+        className="absolute right-0 top-0 bottom-0 w-1/2 hidden lg:block"
+        aria-hidden="true"
+      >
+        <Image
+          src="/fachada.webp"
+          alt="Fachada do Medusa Studio — Jardim Motorama, São José dos Campos"
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        {/* fade esquerda — funde com o conteúdo */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to right, #0B0B0D 0%, transparent 35%)" }}
+        />
+        {/* fade inferior */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to top, #0B0B0D 0%, transparent 25%)" }}
+        />
+        {/* caption */}
+        <div className="absolute bottom-6 right-6 text-[9px] tracking-[0.25em] uppercase text-[#5A5B63] font-body">
+          Jardim Motorama · SJC
+        </div>
+      </motion.div>
+
+      {/* Subtle radial glow sobre o texto */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 60% 50% at 30% 50%, rgba(44,44,51,0.6) 0%, transparent 70%)",
+            "radial-gradient(ellipse 55% 70% at 20% 50%, rgba(44,44,51,0.55) 0%, transparent 70%)",
         }}
         aria-hidden="true"
       />
 
-      {/* Vertical hairline editorial rule */}
-      <div
-        className="absolute left-[calc(50%-1px)] top-0 bottom-0 w-px bg-[#2C2C33] hidden lg:block opacity-40"
-        aria-hidden="true"
-      />
-
+      {/* Coluna esquerda — conteúdo */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-28 pb-20 w-full">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left — wordmark & copy */}
+        <div className="lg:w-1/2">
           <motion.div variants={VARIANTS.container} initial="hidden" animate="show">
             {/* Eyebrow */}
             <motion.p
@@ -100,44 +125,11 @@ export default function Hero() {
                 Ver diagnóstico
               </Link>
             </motion.div>
-
-          </motion.div>
-
-          {/* Right — fachada real */}
-          <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.9, delay: 0.35, ease: "easeOut" }}
-            className="hidden lg:block relative h-[520px] overflow-hidden"
-          >
-            <Image
-              src="/fachada.webp"
-              alt="Fachada do Medusa Studio — Jardim Motorama, São José dos Campos"
-              fill
-              className="object-cover object-center"
-              priority
-            />
-            {/* fade esquerda para fundir com o fundo */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{ background: "linear-gradient(to right, #0B0B0D 0%, transparent 28%)" }}
-              aria-hidden="true"
-            />
-            {/* fade inferior */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{ background: "linear-gradient(to top, #0B0B0D 0%, transparent 30%)" }}
-              aria-hidden="true"
-            />
-            {/* caption */}
-            <div className="absolute bottom-4 right-4 text-[9px] tracking-[0.25em] uppercase text-[#5A5B63] font-body">
-              Jardim Motorama · SJC
-            </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Bottom scroll indicator */}
+      {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
