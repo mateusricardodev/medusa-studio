@@ -12,6 +12,23 @@ const CATEGORIES = [
   { key: "boné", label: "Bonés" },
 ];
 
+const PRICE_RANGES = [
+  { key: "todos", label: "Todos os preços", min: 0, max: Infinity },
+  { key: "ate100", label: "Até R$ 100", min: 0, max: 100 },
+  { key: "100a250", label: "R$ 100–250", min: 100, max: 250 },
+  { key: "acima250", label: "Acima de R$ 250", min: 250, max: Infinity },
+];
+
+const SORT_OPTIONS = [
+  { key: "default", label: "Relevância" },
+  { key: "price-asc", label: "Menor preço" },
+  { key: "price-desc", label: "Maior preço" },
+];
+
+function formatPrice(price: number): string {
+  return price.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 function ProductPlaceholder({ category }: { category: Product["category"] }) {
   const colors: Record<string, string> = {
     camiseta: "#1A1A1F",
@@ -52,26 +69,48 @@ function ProductPlaceholder({ category }: { category: Product["category"] }) {
           <path d="M80 142 L200 142 L210 150 L70 150 Z" stroke="#2C2C33" strokeWidth="1" fill="none" />
         </>
       )}
-      {/* Trident watermark */}
       <text x="140" y="150" textAnchor="middle" fontSize="40" fill="#2C2C33" opacity="0.5" fontFamily="serif">ψ</text>
     </svg>
   );
 }
 
+function ProductImage({ product }: { product: Product }) {
+  if (product.image) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={product.image}
+        alt={product.name}
+        className="w-full h-full object-cover"
+      />
+    );
+  }
+  return <ProductPlaceholder category={product.category} />;
+}
+
 export default function ProductGrid() {
   const [activeCategory, setActiveCategory] = useState("todos");
+  const [activePriceRange, setActivePriceRange] = useState("todos");
+  const [activeSort, setActiveSort] = useState("default");
   const [selectedSize, setSelectedSize] = useState<Record<string, string>>({});
 
-  const filtered = activeCategory === "todos"
-    ? products
-    : products.filter((p) => p.category === activeCategory);
+  const priceRange = PRICE_RANGES.find((r) => r.key === activePriceRange)!;
+
+  let filtered = (activeCategory === "todos" ? products : products.filter((p) => p.category === activeCategory))
+    .filter((p) => p.price >= priceRange.min && p.price <= priceRange.max);
+
+  if (activeSort === "price-asc") {
+    filtered = [...filtered].sort((a, b) => a.price - b.price);
+  } else if (activeSort === "price-desc") {
+    filtered = [...filtered].sort((a, b) => b.price - a.price);
+  }
 
   function buildWAMessage(p: Product) {
     const size = selectedSize[p.id] ?? "—";
     return encodeURIComponent(
       `Olá! Tenho interesse no produto da Medusa Studio:\n\n` +
       `👕 Produto: ${p.name}\n` +
-      `💰 Preço: R$ ${p.price}\n` +
+      `💰 Preço: R$ ${formatPrice(p.price)}\n` +
       `📏 Tamanho: ${size}\n\n` +
       `Gostaria de mais informações sobre disponibilidade!`
     );
@@ -79,8 +118,8 @@ export default function ProductGrid() {
 
   return (
     <div>
-      {/* Filter bar */}
-      <div className="flex gap-2 mb-8 flex-wrap" role="group" aria-label="Filtrar por categoria">
+      {/* Filtro por categoria */}
+      <div className="flex gap-2 mb-4 flex-wrap" role="group" aria-label="Filtrar por categoria">
         {CATEGORIES.map(({ key, label }) => (
           <button
             key={key}
@@ -97,72 +136,116 @@ export default function ProductGrid() {
         ))}
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-[#2C2C33]">
-        {filtered.map((product, i) => (
-          <motion.article
-            key={product.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: i * 0.04 }}
-            className="bg-[#0B0B0D] flex flex-col"
+      {/* Filtro por preço + ordenação */}
+      <div className="flex flex-wrap items-center gap-2 mb-8 pb-5 border-b border-[#2C2C33]">
+        <div className="flex gap-2 flex-wrap" role="group" aria-label="Filtrar por preço">
+          {PRICE_RANGES.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setActivePriceRange(key)}
+              className={`px-3 py-1.5 text-[10px] tracking-widest uppercase font-body border transition-all ${
+                activePriceRange === key
+                  ? "border-[#B8B9C0] text-[#B8B9C0]"
+                  : "border-[#2C2C33] text-[#5A5B63] hover:border-[#5A5B63] hover:text-[#8A8B93]"
+              }`}
+              aria-pressed={activePriceRange === key}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="ml-auto">
+          <select
+            value={activeSort}
+            onChange={(e) => setActiveSort(e.target.value)}
+            className="bg-[#0B0B0D] border border-[#2C2C33] text-[#5A5B63] text-[10px] tracking-widest uppercase font-body px-3 py-1.5 focus:outline-none focus:border-[#B8B9C0] focus:text-[#B8B9C0] transition-all cursor-pointer appearance-none"
           >
-            {/* Image */}
-            <div className="aspect-square relative overflow-hidden bg-[#141417]">
-              <ProductPlaceholder category={product.category} />
-              {product.badge && (
-                <span className="absolute top-3 left-3 bg-[#2C2C33] text-[#B8B9C0] text-[9px] tracking-widest uppercase px-2 py-1 font-body">
-                  {product.badge}
-                </span>
-              )}
-            </div>
+            {SORT_OPTIONS.map(({ key, label }) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
 
-            {/* Info */}
-            <div className="p-4 flex flex-col gap-3 flex-1">
-              <div>
-                <h2 className="font-body font-medium text-sm text-[#E6E6EA] leading-tight">{product.name}</h2>
-                <p className="text-[10px] text-[#5A5B63] font-body mt-1 line-clamp-2">{product.description}</p>
-              </div>
+      {filtered.length === 0 ? (
+        <p className="text-[#5A5B63] text-xs font-body tracking-wide text-center py-20">
+          Nenhum produto encontrado para os filtros selecionados.
+        </p>
+      ) : (
+        <>
+          <p className="text-[#5A5B63] text-[10px] font-body tracking-widest uppercase mb-4">
+            {filtered.length} {filtered.length === 1 ? "produto" : "produtos"}
+          </p>
 
-              {/* Size selector */}
-              {product.sizes.length > 1 && (
-                <div>
-                  <p className="text-[9px] tracking-widest uppercase text-[#5A5B63] font-body mb-1">Tamanho</p>
-                  <div className="flex flex-wrap gap-1">
-                    {product.sizes.map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize((s) => ({ ...s, [product.id]: size }))}
-                        className={`text-[10px] font-mono px-2 py-0.5 border transition-all ${
-                          selectedSize[product.id] === size
-                            ? "border-[#B8B9C0] text-[#B8B9C0]"
-                            : "border-[#2C2C33] text-[#5A5B63] hover:border-[#5A5B63]"
-                        }`}
-                        aria-label={`Tamanho ${size}`}
-                        aria-pressed={selectedSize[product.id] === size}
-                      >
-                        {size}
-                      </button>
-                    ))}
+          {/* Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-[#2C2C33]">
+            {filtered.map((product, i) => (
+              <motion.article
+                key={product.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.04 }}
+                className="bg-[#0B0B0D] flex flex-col"
+              >
+                {/* Imagem */}
+                <div className="aspect-square relative overflow-hidden bg-[#141417]">
+                  <ProductImage product={product} />
+                  {product.badge && (
+                    <span className="absolute top-3 left-3 bg-[#2C2C33] text-[#B8B9C0] text-[9px] tracking-widest uppercase px-2 py-1 font-body">
+                      {product.badge}
+                    </span>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div className="p-4 flex flex-col gap-3 flex-1">
+                  <div>
+                    <h2 className="font-body font-medium text-sm text-[#E6E6EA] leading-tight">{product.name}</h2>
+                    <p className="text-[10px] text-[#5A5B63] font-body mt-1 line-clamp-2">{product.description}</p>
+                  </div>
+
+                  {/* Seletor de tamanho */}
+                  {product.sizes.length > 1 && (
+                    <div>
+                      <p className="text-[9px] tracking-widest uppercase text-[#5A5B63] font-body mb-1">Tamanho</p>
+                      <div className="flex flex-wrap gap-1">
+                        {product.sizes.map((size) => (
+                          <button
+                            key={size}
+                            onClick={() => setSelectedSize((s) => ({ ...s, [product.id]: size }))}
+                            className={`text-[10px] font-mono px-2 py-0.5 border transition-all ${
+                              selectedSize[product.id] === size
+                                ? "border-[#B8B9C0] text-[#B8B9C0]"
+                                : "border-[#2C2C33] text-[#5A5B63] hover:border-[#5A5B63]"
+                            }`}
+                            aria-label={`Tamanho ${size}`}
+                            aria-pressed={selectedSize[product.id] === size}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-auto">
+                    <div className="font-mono text-base text-[#B8B9C0] mb-3">R$ {formatPrice(product.price)}</div>
+                    <a
+                      href={`https://wa.me/5512991234567?text=${buildWAMessage(product)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-full h-9 border border-[#2C2C33] text-[#5A5B63] text-[10px] tracking-widest uppercase font-body hover:border-[#5A5B63] hover:text-[#B8B9C0] transition-all"
+                    >
+                      Tenho interesse
+                    </a>
                   </div>
                 </div>
-              )}
-
-              <div className="mt-auto">
-                <div className="font-mono text-base text-[#B8B9C0] mb-3">R$ {product.price}</div>
-                <a
-                  href={`https://wa.me/5512991234567?text=${buildWAMessage(product)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center w-full h-9 border border-[#2C2C33] text-[#5A5B63] text-[10px] tracking-widest uppercase font-body hover:border-[#5A5B63] hover:text-[#B8B9C0] transition-all"
-                >
-                  Tenho interesse
-                </a>
-              </div>
-            </div>
-          </motion.article>
-        ))}
-      </div>
+              </motion.article>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
