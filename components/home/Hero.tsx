@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
-import MedusaLogo from "@/components/ui/MedusaLogo";
 
 const VARIANTS = {
   container: {
@@ -101,41 +101,37 @@ export default function Hero() {
               </Link>
             </motion.div>
 
-            {/* Stats strip */}
-            <motion.div
-              variants={VARIANTS.item}
-              className="mt-12 flex items-center gap-8 border-t border-[#2C2C33] pt-8"
-            >
-              {[
-                { value: "6+", label: "anos de estúdio" },
-                { value: "1.200+", label: "clientes ativos" },
-                { value: "4.9", label: "avaliação média" },
-              ].map(({ value, label }) => (
-                <div key={label}>
-                  <div className="font-mono text-xl text-[#B8B9C0]">{value}</div>
-                  <div className="text-[10px] tracking-widest uppercase text-[#5A5B63] mt-1 font-body">
-                    {label}
-                  </div>
-                </div>
-              ))}
-            </motion.div>
           </motion.div>
 
-          {/* Right — logo mark */}
+          {/* Right — fachada real */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-            className="hidden lg:flex items-center justify-center"
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.9, delay: 0.35, ease: "easeOut" }}
+            className="hidden lg:block relative h-[520px] overflow-hidden"
           >
-            <div className="relative">
-              {/* Outer glow */}
-              <div
-                className="absolute inset-0 blur-3xl opacity-20 rounded-full"
-                style={{ background: "radial-gradient(circle, #B8B9C0 0%, transparent 70%)" }}
-                aria-hidden="true"
-              />
-              <MedusaLogo size={280} className="relative z-10" />
+            <Image
+              src="/fachada.webp"
+              alt="Fachada do Medusa Studio — Jardim Motorama, São José dos Campos"
+              fill
+              className="object-cover object-center"
+              priority
+            />
+            {/* fade esquerda para fundir com o fundo */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{ background: "linear-gradient(to right, #0B0B0D 0%, transparent 28%)" }}
+              aria-hidden="true"
+            />
+            {/* fade inferior */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{ background: "linear-gradient(to top, #0B0B0D 0%, transparent 30%)" }}
+              aria-hidden="true"
+            />
+            {/* caption */}
+            <div className="absolute bottom-4 right-4 text-[9px] tracking-[0.25em] uppercase text-[#5A5B63] font-body">
+              Jardim Motorama · SJC
             </div>
           </motion.div>
         </div>
