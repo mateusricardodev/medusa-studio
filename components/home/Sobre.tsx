@@ -60,8 +60,8 @@ export default function Sobre() {
                 { value: "4.9★", label: "avaliação média" },
               ].map(({ value, label }) => (
                 <div key={label}>
-                  <div className="font-mono text-xl text-[#B8B9C0]">{value}</div>
-                  <div className="text-[10px] tracking-widest uppercase text-[#5A5B63] mt-1 font-body">
+                  <div className="font-sans font-extrabold text-xl tracking-tight text-[#B8B9C0]">{value}</div>
+                  <div className="text-[10px] tracking-widest uppercase text-[#5A5B63] mt-1 font-sans font-medium">
                     {label}
                   </div>
                 </div>
