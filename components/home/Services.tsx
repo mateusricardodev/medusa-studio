@@ -73,8 +73,8 @@ export default function Services() {
           </h2>
         </motion.div>
 
-        {/* Grid uniforme — 4 colunas iguais */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#2C2C33]">
+        {/* Grid 2×2 uniforme */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#2C2C33]">
           {services.map((s, i) => (
             <motion.article
               key={s.number}
