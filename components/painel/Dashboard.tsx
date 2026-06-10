@@ -23,6 +23,20 @@ const TAG_STYLE: Record<string, string> = {
   inativo: "#C8453B",
 };
 
+function SectionLabel({ children, id }: { children: React.ReactNode; id?: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-6">
+      <span className="block w-px h-3 bg-[#5A5B63] shrink-0" aria-hidden="true" />
+      <span
+        id={id}
+        className="text-[10px] tracking-[0.35em] uppercase text-[#5A5B63] font-body"
+      >
+        {children}
+      </span>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const todayRevenue = todayAppointments
     .filter((a) => a.status === "concluido")
@@ -30,7 +44,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col gap-10">
-      {/* ── KPI Cards ───────────────────────────────────────────────────────── */}
+      {/* ── KPI Cards ─────────────────────────────────────────────────── */}
       <section aria-label="Métricas principais">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[#2C2C33]">
           <KPICard
@@ -42,7 +56,7 @@ export default function Dashboard() {
           <KPICard
             label="Agendamentos hoje"
             value={String(dashboardMetrics.todayAppointments)}
-            sub={`R$ ${todayRevenue} faturado`}
+            sub={`${formatCurrency(todayRevenue)} faturado`}
             accent="chrome"
           />
           <KPICard
@@ -60,36 +74,31 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* ── Revenue Chart + Schedule ─────────────────────────────────────── */}
+      {/* ── Revenue Chart + Schedule ───────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-px bg-[#2C2C33]">
-        {/* Chart — col 3 */}
         <section className="lg:col-span-3 bg-[#141417] p-6" aria-labelledby="chart-heading">
-          <div className="text-[10px] tracking-[0.3em] uppercase text-[#5A5B63] font-body mb-6" id="chart-heading">
-            Faturamento — últimos 6 meses
-          </div>
+          <SectionLabel id="chart-heading">Faturamento — últimos 6 meses</SectionLabel>
           <RevenueChart data={revenueByMonth} />
         </section>
 
-        {/* Today's schedule — col 2 */}
         <section className="lg:col-span-2 bg-[#141417] p-6" aria-labelledby="schedule-heading">
-          <div className="text-[10px] tracking-[0.3em] uppercase text-[#5A5B63] font-body mb-6" id="schedule-heading">
-            Agenda de hoje
-          </div>
-          <div className="flex flex-col gap-2 overflow-auto max-h-80">
+          <SectionLabel id="schedule-heading">Agenda de hoje</SectionLabel>
+          <div className="flex flex-col gap-1 overflow-auto max-h-80">
             {todayAppointments.map((apt) => {
               const s = STATUS_STYLE[apt.status];
               return (
                 <div
                   key={apt.id}
-                  className="flex items-center gap-3 px-3 py-2.5 border border-[#2C2C33] text-xs font-body"
+                  className="flex items-center gap-3 px-3 py-2.5 border-b border-[#1E1E24] text-xs font-body"
+                  style={{ borderLeft: `2px solid ${s.color}` }}
                 >
-                  <span className="font-mono text-[#B8B9C0] w-10 shrink-0">{apt.time}</span>
+                  <span className="font-mono text-[#8A8B93] w-10 shrink-0 tabular-nums">{apt.time}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[#E6E6EA] truncate">{apt.client}</div>
+                    <div className="text-[#E6E6EA] truncate leading-snug">{apt.client}</div>
                     <div className="text-[#5A5B63] truncate text-[10px]">{apt.service}</div>
                   </div>
                   <span
-                    className="text-[9px] tracking-wider uppercase shrink-0"
+                    className="text-[9px] tracking-wider uppercase shrink-0 font-body"
                     style={{ color: s.color }}
                   >
                     {s.label}
@@ -101,19 +110,17 @@ export default function Dashboard() {
         </section>
       </div>
 
-      {/* ── CRM Table ───────────────────────────────────────────────────────── */}
+      {/* ── CRM Table ─────────────────────────────────────────────────── */}
       <section aria-labelledby="crm-heading">
-        <div className="text-[10px] tracking-[0.3em] uppercase text-[#5A5B63] font-body mb-4" id="crm-heading">
-          Clientes — CRM
-        </div>
-        <div className="overflow-x-auto">
+        <SectionLabel id="crm-heading">Clientes — CRM</SectionLabel>
+        <div className="overflow-x-auto border border-[#2C2C33]">
           <table className="w-full text-sm font-body border-collapse">
             <thead>
-              <tr className="border-b border-[#2C2C33]">
+              <tr className="bg-[#141417] border-b border-[#2C2C33]">
                 {["Cliente", "Telefone", "Última visita", "Visitas/ano", "Total gasto", "Tag"].map((h) => (
                   <th
                     key={h}
-                    className="text-[9px] tracking-[0.25em] uppercase text-[#5A5B63] text-left py-3 px-4 font-body"
+                    className="text-[9px] tracking-[0.25em] uppercase text-[#5A5B63] text-left py-3 px-4 font-body whitespace-nowrap"
                   >
                     {h}
                   </th>
@@ -121,13 +128,19 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {clients.map((c) => (
-                <tr key={c.id} className="border-b border-[#2C2C33] hover:bg-[#141417] transition-colors">
-                  <td className="py-3 px-4 text-[#E6E6EA]">{c.name}</td>
-                  <td className="py-3 px-4 text-[#8E8F97] font-mono text-xs">{c.phone}</td>
-                  <td className="py-3 px-4 text-[#8E8F97] font-mono text-xs">{c.lastVisit}</td>
-                  <td className="py-3 px-4 text-[#B8B9C0] font-mono text-center">{c.visitsThisYear}×</td>
-                  <td className="py-3 px-4 text-[#B8B9C0] font-mono">{formatCurrency(c.totalSpent)}</td>
+              {clients.map((c, i) => (
+                <tr
+                  key={c.id}
+                  className="border-b border-[#1E1E24] hover:bg-[#141417] transition-colors"
+                  style={{ background: i % 2 === 0 ? "#0F0F12" : "#141417" }}
+                >
+                  <td className="py-3 px-4 text-[#E6E6EA] font-body">{c.name}</td>
+                  <td className="py-3 px-4 text-[#5A5B63] font-mono text-xs tabular-nums">{c.phone}</td>
+                  <td className="py-3 px-4 text-[#5A5B63] font-mono text-xs tabular-nums">{c.lastVisit}</td>
+                  <td className="py-3 px-4 text-[#B8B9C0] font-mono text-xs tabular-nums text-center">{c.visitsThisYear}×</td>
+                  <td className="py-3 px-4 font-mono text-xs tabular-nums" style={{ color: c.totalSpent >= 2000 ? "#3FB68B" : "#B8B9C0" }}>
+                    {formatCurrency(c.totalSpent)}
+                  </td>
                   <td className="py-3 px-4">
                     <span
                       className="text-[9px] tracking-widest uppercase border px-2 py-0.5 font-body"
@@ -147,21 +160,40 @@ export default function Dashboard() {
 }
 
 function KPICard({
-  label, value, sub, accent,
+  label,
+  value,
+  sub,
+  accent,
 }: {
-  label: string; value: string; sub: string; accent: "chrome" | "loss" | "gain";
+  label: string;
+  value: string;
+  sub: string;
+  accent: "chrome" | "loss" | "gain";
 }) {
   const colorMap = {
     chrome: "#B8B9C0",
     loss: "#C8453B",
     gain: "#3FB68B",
   };
+  const c = colorMap[accent];
+
   return (
-    <div className="bg-[#141417] p-6">
-      <div className="text-[9px] tracking-[0.3em] uppercase text-[#5A5B63] font-body mb-2">{label}</div>
+    <div
+      className="bg-[#141417] p-6 relative overflow-hidden"
+      style={{ borderTop: `1px solid ${c}` }}
+    >
+      {/* accent glow */}
       <div
-        className="font-mono text-2xl leading-none mb-1"
-        style={{ color: colorMap[accent] }}
+        className="absolute inset-x-0 top-0 h-20 pointer-events-none"
+        style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, ${c}18, transparent)` }}
+        aria-hidden="true"
+      />
+      <div className="text-[9px] tracking-[0.35em] uppercase text-[#5A5B63] font-body mb-3">
+        {label}
+      </div>
+      <div
+        className="font-display leading-none mb-2"
+        style={{ fontSize: "clamp(1.6rem, 2.8vw, 2.5rem)", color: c }}
       >
         {value}
       </div>
