@@ -7,6 +7,7 @@ export interface Professional {
   specialties: string[];
   rating: number;
   reviewCount: number;
+  categories: ("barbearia" | "tatuagem" | "piercing")[]; // 🚀 Adicionado para o filtro funcionar
 }
 
 export const professionals: Professional[] = [
@@ -17,6 +18,7 @@ export const professionals: Professional[] = [
     specialties: ["Corte Clássico", "Barba", "Pigmentação"],
     rating: 4.9,
     reviewCount: 312,
+    categories: ["barbearia"], // 🚀 Só aparece em Barbearia
   },
   {
     id: "rafael",
@@ -25,6 +27,7 @@ export const professionals: Professional[] = [
     specialties: ["Corte", "Tatuagem Fine Line", "Blackwork"],
     rating: 4.8,
     reviewCount: 198,
+    categories: ["barbearia", "tatuagem"], // 🚀 Aparece em Barbearia e Tatuagem
   },
   {
     id: "lucas",
@@ -33,5 +36,6 @@ export const professionals: Professional[] = [
     specialties: ["Realismo", "Piercing", "Geométrico"],
     rating: 4.9,
     reviewCount: 245,
+    categories: ["tatuagem", "piercing"], // 🚀 Aparece em Tatuagem e Piercing
   },
 ];

@@ -88,6 +88,12 @@ export default function AgendarFlow() {
 
   const categoryServices = services.filter((s) => s.category === category);
   const selectedService = categoryServices.find((s) => s.id === booking.serviceId);
+  
+  // 🚀 Lógica atualizada: Filtra os profissionais verificando se a categoria selecionada está inclusa na lista deles
+  const filteredProfessionals = professionals.filter((p) => 
+    p.categories?.includes(category as any)
+  );
+
   const selectedProfessional = professionals.find((p) => p.id === booking.professionalId);
   const slots = booking.professionalId && booking.date
     ? getSlots(booking.professionalId, booking.date)
@@ -217,7 +223,8 @@ export default function AgendarFlow() {
             <div>
               <h2 className="font-display text-xl text-[#E6E6EA] mb-6">Com quem?</h2>
               <div className="flex flex-col gap-3">
-                {professionals.map((p) => (
+                {/* 🚀 Renderiza apenas os profissionais filtrados pela categoria escolhida */}
+                {filteredProfessionals.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => { setBooking({ ...booking, professionalId: p.id }); goTo("data"); }}
