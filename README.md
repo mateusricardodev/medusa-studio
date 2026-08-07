@@ -1,63 +1,212 @@
-# Medusa Studio — Site & Sistema
+# 🐍 Medusa Studio
 
-Demo navegável do sistema Medusa Studio. Frontend only, sem backend.
+> **Plataforma digital para estúdios de tatuagem — experiência do cliente, agendamento, loja e gestão em um só lugar.**
 
-## Como rodar
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge\&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge\&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge\&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge\&logo=tailwindcss)](https://tailwindcss.com/)
+
+---
+
+## ✨ Sobre o projeto
+
+O **Medusa Studio** é uma aplicação web desenvolvida para demonstrar como um estúdio de tatuagem pode centralizar sua presença digital e operações em uma única plataforma.
+
+O projeto combina uma **landing page comercial**, fluxo de **agendamento**, orçamento de tatuagens, **loja de produtos**, painel administrativo e uma ferramenta de diagnóstico comercial.
+
+Atualmente, o projeto funciona como um **frontend demonstrativo**, utilizando dados mockados para simular as operações de um estúdio real.
+
+### 🎯 Objetivo
+
+Criar uma experiência digital moderna para conectar:
+
+* 👤 Clientes
+* 🎨 Tatuadores
+* 📅 Agendamentos
+* 🛍️ Produtos
+* 📊 Gestão
+* 💰 Indicadores financeiros
+
+Tudo através de uma interface única e responsiva.
+
+---
+
+## 🚀 Funcionalidades
+
+### 🌐 Site público
+
+* Hero section
+* Apresentação do estúdio
+* Serviços e preços
+* Avaliações de clientes
+* Localização
+* Informações comerciais
+
+### 📅 Agendamento
+
+* Seleção de serviço
+* Seleção de profissional
+* Escolha de horário
+* Fluxo de agendamento simulado
+* Disponibilidade baseada em dados mockados
+
+### 🎨 Orçamento de tatuagem
+
+* Formulário personalizado
+* Coleta de informações do projeto
+* Simulação de solicitação de orçamento
+
+### 🛍️ Loja
+
+* Catálogo de produtos
+* Roupas
+* Tênis
+* Cards de produtos
+* Estrutura preparada para imagens reais
+
+### 📊 Painel administrativo
+
+Dashboard demonstrativo contendo:
+
+* Agenda
+* Clientes
+* Faturamento
+* Métricas
+* Indicadores
+* Informações operacionais
+
+### 📈 Diagnóstico comercial
+
+Ferramenta desenvolvida para simular possíveis perdas financeiras e transformar dados operacionais em informações úteis para apresentação comercial.
+
+---
+
+## 🧩 Arquitetura
+
+```text
+medusa-studio/
+├── app/
+│   ├── agendar/
+│   ├── diagnostico/
+│   ├── loja/
+│   ├── painel/
+│   └── tatuagem/
+│
+├── components/
+│   ├── agendar/
+│   ├── home/
+│   ├── loja/
+│   ├── tatuagem/
+│   └── ui/
+│
+├── lib/
+│   └── mock/
+│       ├── appointments.ts
+│       ├── clients.ts
+│       ├── professionals.ts
+│       ├── products.ts
+│       ├── revenue.ts
+│       ├── reviews.ts
+│       ├── services.ts
+│       └── slots.ts
+│
+└── public/
+```
+
+A separação entre componentes, páginas e dados simulados permite evoluir o projeto posteriormente para uma arquitetura com API e banco de dados.
+
+---
+
+## 🛠️ Tecnologias
+
+| Tecnologia         | Utilização            |
+| ------------------ | --------------------- |
+| **Next.js 16**     | Framework web         |
+| **React 19**       | Interface             |
+| **TypeScript**     | Tipagem estática      |
+| **Tailwind CSS 4** | Estilização           |
+| **Framer Motion**  | Animações             |
+| **Recharts**       | Visualização de dados |
+| **ESLint**         | Qualidade de código   |
+
+---
+
+## ⚡ Como executar
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/mateusricardodev/medusa-studio.git
+cd medusa-studio
+```
+
+### 2. Instale as dependências
 
 ```bash
 npm install
+```
+
+### 3. Execute em desenvolvimento
+
+```bash
 npm run dev
 ```
 
-Acesse `http://localhost:3000`.
+### 4. Acesse
 
-## Rotas
-
-| Rota | Descrição |
-|------|-----------|
-| `/` | Site público — hero, serviços, avaliações, localização |
-| `/agendar` | Fluxo de agendamento simulado |
-| `/tatuagem` | Formulário de orçamento de tatuagem |
-| `/loja` | Catálogo de roupas e tênis |
-| `/painel` | Painel do dono (somente visual) |
-| `/diagnostico` | Simulador de perdas — ferramenta de pitch |
-
-## Onde estão os dados
-
-Todos em `lib/mock/`:
-
-- `services.ts` — lista de serviços e preços
-- `professionals.ts` — profissionais do estúdio
-- `slots.ts` — lógica de geração de slots de horário
-- `products.ts` — catálogo de roupas e tênis
-- `reviews.ts` — avaliações
-- `clients.ts` — dados do CRM
-- `appointments.ts` — agenda do dia e métricas
-- `revenue.ts` — faturamento por mês e KPIs do painel
-
-## Onde trocar logo e fotos reais
-
-- **Logo**: substituir o componente `components/ui/MedusaLogo.tsx` por um `<Image>` apontando para o arquivo real em `public/`.
-- **Fotos dos produtos**: em `components/loja/ProductGrid.tsx`, o componente `ProductPlaceholder` pode ser substituído por `<Image src={product.imageUrl} ... />` após adicionar a propriedade `imageUrl` em `lib/mock/products.ts`.
-- **Fotos dos profissionais**: em `components/agendar/AgendarFlow.tsx`, o avatar com inicial pode virar uma `<Image>`.
-
-## Deploy na Vercel
-
-```bash
-git init && git add . && git commit -m "init: medusa studio"
-vercel
+```text
+http://localhost:3000
 ```
 
-Ou conectar o repositório no painel da Vercel diretamente.
-Para domínio próprio: Vercel → Project Settings → Domains.
+---
 
-## WhatsApp
+## 🗺️ Rotas
 
-O número está em 5 lugares como `5512991234567`. Substituir em:
-- `components/home/Location.tsx`
-- `components/agendar/AgendarFlow.tsx`
-- `components/tatuagem/TattooForm.tsx`
-- `components/loja/ProductGrid.tsx`
-- `components/diagnostico/LossSimulator.tsx`
+| Rota           | Descrição                |
+| -------------- | ------------------------ |
+| `/`            | Página principal         |
+| `/agendar`     | Fluxo de agendamento     |
+| `/tatuagem`    | Solicitação de orçamento |
+| `/loja`        | Catálogo de produtos     |
+| `/painel`      | Dashboard administrativo |
+| `/diagnostico` | Simulador de perdas      |
 
-> Todos os dados são fictícios, gerados exclusivamente para demonstração.
+---
+
+## 🔮 Próximos passos
+
+O projeto foi estruturado para permitir uma evolução natural para uma aplicação completa.
+
+Possíveis melhorias:
+
+* [ ] Backend com API REST
+* [ ] Banco de dados
+* [ ] Autenticação
+* [ ] Integração com WhatsApp
+* [ ] Agendamento real
+* [ ] Gateway de pagamento
+* [ ] CRM de clientes
+* [ ] Upload de imagens
+* [ ] Gestão real de estoque
+* [ ] Dashboard conectado a dados reais
+
+---
+
+## 📌 Status
+
+🟢 **Frontend demonstrativo / MVP**
+
+Os dados utilizados atualmente são fictícios e destinados exclusivamente à demonstração.
+
+---
+
+## 👨‍💻 Autor
+
+**Mateus Ricardo**
+
+Desenvolvedor de Software com foco em desenvolvimento web, backend, automação e soluções orientadas a dados.
+
+---
+
+⭐ Se este projeto foi útil ou interessante para você, considere deixar uma estrela no repositório.
